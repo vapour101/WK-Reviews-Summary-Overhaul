@@ -3,8 +3,13 @@
     "displayName": "Wanikani Reviews Summary Overhaul",
     "version": "0.1.0",
     "description": "Overhaul Wanikani's default reviews summary to be more useful.",
+    "homepage": "https://github.com/vapour101/WK-Reviews-Summary-Overhaul",
     "private": true,
     "license": "GPL-3.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vapour101/WK-Reviews-Summary-Overhaul.git"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "webpack"

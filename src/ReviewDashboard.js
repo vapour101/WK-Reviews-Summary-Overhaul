@@ -24,10 +24,6 @@ export default class ReviewDashboard {
             .then(this.displayData);
     }
 
-    getItemFromReview(review) {
-        return review.item;
-    }
-
     setupDocument = () => {
         $("#correct>div>ul, #incorrect>div>ul").empty();
 
@@ -36,7 +32,7 @@ export default class ReviewDashboard {
     };
 
     setTotals() {
-        let correct = this.filterCorrect(this.reviews).length;
+        let correct = this.reviews.filter(Review.correctFilter()).length;
 
         this.createOverallTotalHeader(correct, this.reviews.length);
 
@@ -57,8 +53,8 @@ export default class ReviewDashboard {
     }
 
     countSubtotal(srsClass) {
-        let filteredReviews = this.filterByNewSrs(this.reviews, srsClass);
-        let correct = this.filterCorrect(filteredReviews).length;
+        let filteredReviews = this.reviews.filter(Review.srsNewFilter(srsClass));
+        let correct = filteredReviews.filter(Review.correctFilter()).length;
 
         this.setSubtotal("correct", srsClass, correct);
         this.setSubtotal("incorrect", srsClass, filteredReviews.length - correct);
@@ -86,13 +82,15 @@ export default class ReviewDashboard {
     insertMissedBurnItems() {
         $("#incorrect .burned>ul").append(
             this.getMissedBurnReviews()
-                .map(this.getItemFromReview)
+                .map(Review.getItem)
                 .map(this.getItemDomElement)
         );
     }
 
     getMissedBurnReviews() {
-        return this.filterByPreviousSrs(this.filterCorrect(this.reviews, true), "enlightened");
+        return this.reviews
+            .filter(Review.incorrectFilter())
+            .filter(Review.srsPrevFilter("enlightened"));
     }
 
     setTotal(id, total) {
@@ -171,17 +169,17 @@ export default class ReviewDashboard {
     }
 
     insertItems(srsClass) {
-        let srsReviews = this.filterByNewSrs(this.reviews, srsClass);
+        let srsReviews = this.reviews.filter(Review.srsNewFilter(srsClass));
 
         $(`#correct .${srsClass}>ul`).append(
-            this.filterCorrect(srsReviews)
-                .map(this.getItemFromReview)
+            srsReviews.filter(Review.correctFilter())
+                .map(Review.getItem)
                 .map(this.getItemDomElement)
         );
 
         $(`#incorrect .${srsClass}>ul`).append(
-            this.filterCorrect(srsReviews, true)
-                .map(this.getItemFromReview)
+            srsReviews.filter(Review.incorrectFilter())
+                .map(Review.getItem)
                 .map(this.getItemDomElement)
         );
     }
@@ -298,13 +296,5 @@ export default class ReviewDashboard {
 
     filterCorrect(reviewArray, invert = false) {
         return reviewArray.filter(r => (r.data.incorrect_meaning_answers + r.data.incorrect_reading_answers === 0) !== invert);
-    }
-
-    filterByNewSrs(reviewArray, srsClass) {
-        return reviewArray.filter(r => r.data.ending_srs_stage_name.toLowerCase().includes(srsClass.toLowerCase()));
-    }
-
-    filterByPreviousSrs(reviewArray, srsClass) {
-        return reviewArray.filter(r => r.data.starting_srs_stage_name.toLowerCase().includes(srsClass.toLowerCase()));
     }
 }
