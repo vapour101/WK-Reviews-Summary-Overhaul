@@ -1,5 +1,6 @@
 import {name as package_name} from "../package.json";
 export const SRS_LEVELS = ["apprentice", "guru", "master", "enlightened", "burned"];
+export const ITEM_TYPES = ["radical", "kanji", "vocabulary"];
 export const script_name = package_name;
 
 export const fetchWkof = () => new Promise((resolve, reject) => {

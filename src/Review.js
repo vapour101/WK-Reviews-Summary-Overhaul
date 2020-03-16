@@ -34,6 +34,10 @@ export default class Review {
         return review => !review.isCorrect;
     }
 
+    static itemTypeFilter(itemType) {
+        return review => review.itemType === itemType;
+    }
+
     constructor(rawReview) {
         Object.assign(this, rawReview);
     }
@@ -82,6 +86,10 @@ export default class Review {
 
     get isCorrect() {
         return this.incorrectMeaningAnswers + this.incorrectReadingAnswers === 0;
+    }
+
+    get itemType() {
+        return this.item.object.toLowerCase();
     }
 
 }

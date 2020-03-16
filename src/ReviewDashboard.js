@@ -1,4 +1,4 @@
-import {SRS_LEVELS} from "./utils";
+import {SRS_LEVELS, ITEM_TYPES} from "./utils";
 import Review from "./Review";
 import Item from "./Item";
 
@@ -125,7 +125,21 @@ export default class ReviewDashboard {
         $("#review-stats").append(header);
     }
 
+    setGrandTotal(itemType) {
+        let filtered = this.reviews.filter(Review.itemTypeFilter(itemType));
+        let correct = filtered.filter(Review.correctFilter()).length;
+
+        if (itemType === "radical")
+            itemType += "s";
+
+        $(`#review-stats-${itemType}>.review-stats-value`).text(correct);
+        $(`#review-stats-${itemType}>.review-stats-total>span`).text(filtered.length);
+    }
+
     displayData = () => {
+        for (let type of ITEM_TYPES)
+            this.setGrandTotal(type);
+
         for (let srs of SRS_LEVELS)
             this.insertItems(srs);
 
@@ -293,8 +307,4 @@ export default class ReviewDashboard {
         for (let review of this.reviews)
             review.associateItem(itemList);
     };
-
-    filterCorrect(reviewArray, invert = false) {
-        return reviewArray.filter(r => (r.data.incorrect_meaning_answers + r.data.incorrect_reading_answers === 0) !== invert);
-    }
 }
