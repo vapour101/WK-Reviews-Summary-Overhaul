@@ -15,6 +15,10 @@ export default class Item{
         return item.id - id;
     }
 
+    static mapDomElement(item) {
+        return item.getDomElement();
+    }
+
     constructor(rawItem) {
         Object.assign(this, rawItem);
     }
@@ -33,5 +37,55 @@ export default class Item{
             return -1;
 
         return 1;
+    }
+
+    setTextOnDomElement(dom) {
+        if (this.data.characters !== null) {
+            dom.text(this.data.characters);
+            return;
+        }
+
+        let img = $("<img />");
+        img.attr("src", this.characterImageUrl);
+        img.css("filter", "invert(1)");
+        dom.append(img);
+    }
+
+    getDomElement() {
+        let li = $("<li />");
+        let a = $("<a />");
+        li.addClass(this.domClassName);
+        li.attr(this.domAttrs);
+        li.append(a);
+        this.setTextOnDomElement(a);
+        a.attr({
+            href: this.data.document_url,
+            lang: "ja"
+        });
+
+        return li;
+    }
+
+    get characterImageUrl() {
+        return this.data.character_images.find(i => i.content_type === "image/svg+xml" && i.metadata.inline_styles).url;
+    }
+
+    get domClassName() {
+        if (this.object === "radical")
+            return "radicals";
+        return this.object;
+    }
+
+    get primaryMeaning() {
+        return this.data.meanings.find(m => m.primary).meaning;
+    }
+
+    get domAttrs() {
+        let res = {
+            "data-en": this.primaryMeaning,
+            //TODO: continue here
+        };
+
+        return res;
     }
 }

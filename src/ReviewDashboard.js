@@ -21,7 +21,8 @@ export default class ReviewDashboard {
             .then(this.setupDocument);
 
         Promise.all([documentSetup, dataLoaded])
-            .then(this.displayData);
+            .then(this.displayData)
+            .catch(err => console.log(err));
     }
 
     setupDocument = () => {
@@ -83,7 +84,7 @@ export default class ReviewDashboard {
         $("#incorrect .burned>ul").append(
             this.getMissedBurnReviews()
                 .map(Review.getItem)
-                .map(this.getItemDomElement)
+                .map(Item.mapDomElement)
         );
     }
 
@@ -188,13 +189,13 @@ export default class ReviewDashboard {
         $(`#correct .${srsClass}>ul`).append(
             srsReviews.filter(Review.correctFilter())
                 .map(Review.getItem)
-                .map(this.getItemDomElement)
+                .map(Item.mapDomElement)
         );
 
         $(`#incorrect .${srsClass}>ul`).append(
             srsReviews.filter(Review.incorrectFilter())
                 .map(Review.getItem)
-                .map(this.getItemDomElement)
+                .map(Item.mapDomElement)
         );
     }
 
@@ -237,49 +238,22 @@ export default class ReviewDashboard {
         return res;
     }
 
-    setDomCharacter(dom, item) {
-        if (item.data.characters !== null) {
-            dom.text(item.data.characters);
-            return;
-        }
-
-        let img = $("<img />");
-        img.attr("src", item.data.character_images.find(i => i.content_type === "image/svg+xml" && i.metadata.inline_styles).url);
-        img.css("filter", "invert(1)");
-        dom.append(img);
-    }
-
-    getItemDomElement = (item) => {
-        let li = $("<li />");
-        let a = $("<a />");
-        li.addClass(this.getClassForItem(item));
-        li.attr(this.getAttrsForItem(item));
-        li.append(a);
-        this.setDomCharacter(a, item);
-        a.attr({
-            href: item.data.document_url,
-            lang: "ja",
-        });
-
-        return li;
-    }
-
     getMidnightToday() {
         let res = new Date();
         res.setHours(0, 0, 0, 0);
-        return res;
+        let time = res.getTime() - 5 * 24 * 60 *60 *1000;
+
+        return new Date(time);
     }
 
     fetchReviews(wkof) {
-
         let options = {
             last_update: this.getMidnightToday(),
         };
 
         return wkof.Apiv2.fetch_endpoint("reviews", options)
             .then(Review.processApiResponse)
-            .then(reviews => this.reviews = reviews)
-            .then(() => console.log(this.reviews.slice(0, 10)));
+            .then(reviews => this.reviews = reviews);
     }
 
     fetchItems(wkof, reviewsPromise){

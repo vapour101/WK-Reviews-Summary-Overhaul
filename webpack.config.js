@@ -1,11 +1,11 @@
 const path = require("path");
-const WebpackUserscript = require('webpack-userscript');
+const WebpackUserscript = require("webpack-userscript");
 const TerserPlugin = require("terser-webpack-plugin");
 const displayName = require("./package.json").displayName;
-const dev = process.env.NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === "development";
 
 module.exports = {
-    mode : dev ? 'development' : 'production',
+    mode : dev ? "development" : "production",
     entry : path.resolve(__dirname, "src", "index.js"),
     output : {
         filename : `${process.env.npm_package_name}.user.js`,
@@ -30,9 +30,9 @@ module.exports = {
                 test: /\.m?js$/,
                 exclude: /(node_modules|bower_components)/,
                 use: {
-                    loader: 'babel-loader',
+                    loader: "babel-loader",
                     options: {
-                        presets: ['@babel/preset-env'],
+                        presets: ["@babel/preset-env"],
                         plugins: ["@babel/plugin-proposal-class-properties"],
                     }
                 }
