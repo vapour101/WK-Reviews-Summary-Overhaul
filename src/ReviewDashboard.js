@@ -199,51 +199,10 @@ export default class ReviewDashboard {
         );
     }
 
-    getClassForItem(item) {
-        if (item.object === "radical")
-            return "radicals";
-        return item.object;
-    }
-
-    getPrimaryMeaning(item) {
-        return item.data.meanings.find(m => m.primary).meaning;
-    }
-
-    getPrimaryReading(item) {
-        return item.data.readings.find(r => r.primary).reading;
-    }
-
-    getMeaningCorrect(item) {
-        return Math.round(item.review_statistics.meaning_correct * 100 / (item.review_statistics.meaning_correct + item.review_statistics.meaning_incorrect)) + "%";
-    }
-
-    getReadingCorrect(item) {
-        return Math.round(item.review_statistics.reading_correct * 100 / (item.review_statistics.reading_correct + item.review_statistics.reading_incorrect)) + "%";
-    }
-
-    getAttrsForItem(item) {
-        let res = {
-            "data-en": this.getPrimaryMeaning(item),
-            "data-mc": this.getMeaningCorrect(item),
-        };
-
-        if (item.object !== "radical") {
-            res = {
-                ...res,
-                "data-ja": this.getPrimaryReading(item),
-                "data-rc": this.getReadingCorrect(item),
-            };
-        }
-
-        return res;
-    }
-
     getMidnightToday() {
         let res = new Date();
         res.setHours(0, 0, 0, 0);
-        let time = res.getTime() - 5 * 24 * 60 *60 *1000;
-
-        return new Date(time);
+        return res;
     }
 
     fetchReviews(wkof) {

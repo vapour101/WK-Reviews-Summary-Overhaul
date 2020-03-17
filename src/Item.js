@@ -80,11 +80,46 @@ export default class Item{
         return this.data.meanings.find(m => m.primary).meaning;
     }
 
+    get primaryReading() {
+        return this.data.readings.find(r => r.primary).reading;
+    }
+
+    get meaningCorrectPercent() {
+        return Math.round(this.meaningCorrectCount * 100 / this.meaningAttempts);
+    }
+
+    get meaningCorrectCount() {
+        return this.review_statistics.meaning_correct;
+    }
+
+    get meaningAttempts() {
+        return this.review_statistics.meaning_correct + this.review_statistics.meaning_incorrect;
+    }
+
+    get readingCorrectPercent() {
+        return Math.round(this.readingCorrectCount * 100 / this.readingAttempts);
+    }
+
+    get readingCorrectCount() {
+        return this.review_statistics.reading_correct;
+    }
+
+    get readingAttempts() {
+        return this.review_statistics.reading_correct + this.review_statistics.reading_incorrect;
+    }
+
     get domAttrs() {
         let res = {
             "data-en": this.primaryMeaning,
-            //TODO: continue here
+            "data-mc": this.meaningCorrectPercent,
         };
+
+        if (!this.object.startsWith("r"))
+            res = {
+                ...res,
+                "data-ja": this.primaryReading,
+                "data-rc": this.readingCorrectPercent,
+            };
 
         return res;
     }
