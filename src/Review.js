@@ -1,5 +1,4 @@
 import Item from "./Item";
-import bs from "binary-search";
 
 export default class Review {
     static processApiResponse(response) {
@@ -43,7 +42,7 @@ export default class Review {
     }
 
     associateItem(itemList) {
-        this.item = itemList[bs(itemList, this.itemId, Item.binarySearchCompare)];
+        this.item = itemList[this.itemId];
     }
 
     compare(other) {

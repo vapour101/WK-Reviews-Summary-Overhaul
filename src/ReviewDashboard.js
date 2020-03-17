@@ -222,7 +222,11 @@ export default class ReviewDashboard {
                     review_statistics: true,
                 },
                 filters: {
-                    level: "1..+0",
+                    //level: "1..+0",
+                    srs: {
+                        value: "lock",
+                        invert: true,
+                    },
                 },
             },
         };
@@ -232,6 +236,7 @@ export default class ReviewDashboard {
         return Promise.all([itemsFetch, reviewsPromise])
             .then(vals => vals[0])
             .then(Item.processApiResponse)
+            .then(items => wkof.ItemData.get_index(items, "subject_id"))
             .then(this.associateItemsWithReviews)
             .then(() => this.reviews.sort(Review.compare));
     }
