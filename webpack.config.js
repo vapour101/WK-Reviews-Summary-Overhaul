@@ -5,24 +5,24 @@ const displayName = require("./package.json").displayName;
 const dev = process.env.NODE_ENV === "development";
 
 module.exports = {
-    mode : dev ? "development" : "production",
-    entry : path.resolve(__dirname, "src", "index.js"),
-    output : {
-        filename : `${process.env.npm_package_name}.user.js`,
-        path : path.resolve(__dirname, "dist"),
+    mode: dev ? "development" : "production",
+    entry: path.resolve(__dirname, "src", "index.js"),
+    output: {
+        filename: `${process.env.npm_package_name}.user.js`,
+        path: path.resolve(__dirname, "dist")
     },
     optimization: {
-        minimize: false,
+        minimize: false
     },
-    plugins : [
+    plugins: [
         new WebpackUserscript({
-            headers : {
+            headers: {
                 name: displayName,
-                include : "/^https://(www|preview).wanikani.com/review/?$/",
-                grant : "none",
+                include: "/^https://(www|preview).wanikani.com/review/?$/",
+                grant: "none"
             },
-            pretty : true
-        }),
+            pretty: true
+        })
     ],
     module: {
         rules: [
@@ -33,10 +33,10 @@ module.exports = {
                     loader: "babel-loader",
                     options: {
                         presets: ["@babel/preset-env"],
-                        plugins: ["@babel/plugin-proposal-class-properties"],
+                        plugins: ["@babel/plugin-proposal-class-properties"]
                     }
                 }
             }
-        ],
-    },
+        ]
+    }
 };

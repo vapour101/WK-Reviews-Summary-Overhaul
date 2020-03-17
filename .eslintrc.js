@@ -2,13 +2,13 @@ module.exports = {
     root: true,
     env: {
         node: true,
-        jquery: true,
+        jquery: true
     },
     parser: "babel-eslint",
+    extends: ["prettier"],
+    plugins: ["prettier"],
     rules: {
         "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-        indent: ["error", 4],
-        semi: ["error", "always"],
-        quotes: ["error", "double"]
-    },
+        "prettier/prettier": "error"
+    }
 };

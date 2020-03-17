@@ -48,13 +48,11 @@ export default class Review {
     compare(other) {
         let typeCompare = this.item.compareByType(other.item);
 
-        if (typeCompare !== 0)
-            return typeCompare;
+        if (typeCompare !== 0) return typeCompare;
 
         let srsDiff = this.srsEndStage - other.srsEndStage;
 
-        if (srsDiff !== 0)
-            return srsDiff;
+        if (srsDiff !== 0) return srsDiff;
 
         return this.itemId - other.itemId;
     }
@@ -84,11 +82,12 @@ export default class Review {
     }
 
     get isCorrect() {
-        return this.incorrectMeaningAnswers + this.incorrectReadingAnswers === 0;
+        return (
+            this.incorrectMeaningAnswers + this.incorrectReadingAnswers === 0
+        );
     }
 
     get itemType() {
         return this.item.object.toLowerCase();
     }
-
 }

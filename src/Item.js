@@ -1,4 +1,4 @@
-export default class Item{
+export default class Item {
     static processApiResponse(response) {
         return response.map(Item.fromRaw);
     }
@@ -24,17 +24,13 @@ export default class Item{
     }
 
     compareByType(other) {
-        if (this.object === other.object)
-            return 0;
+        if (this.object === other.object) return 0;
 
-        if (this.object === "radical")
-            return -1;
+        if (this.object === "radical") return -1;
 
-        if (other.object === "radical")
-            return 1;
+        if (other.object === "radical") return 1;
 
-        if (this.object === "kanji")
-            return -1;
+        if (this.object === "kanji") return -1;
 
         return 1;
     }
@@ -67,12 +63,13 @@ export default class Item{
     }
 
     get characterImageUrl() {
-        return this.data.character_images.find(i => i.content_type === "image/svg+xml" && i.metadata.inline_styles).url;
+        return this.data.character_images.find(
+            i => i.content_type === "image/svg+xml" && i.metadata.inline_styles
+        ).url;
     }
 
     get domClassName() {
-        if (this.object === "radical")
-            return "radicals";
+        if (this.object === "radical") return "radicals";
         return this.object;
     }
 
@@ -85,7 +82,9 @@ export default class Item{
     }
 
     get meaningCorrectPercent() {
-        return Math.round(this.meaningCorrectCount * 100 / this.meaningAttempts);
+        return Math.round(
+            (this.meaningCorrectCount * 100) / this.meaningAttempts
+        );
     }
 
     get meaningCorrectCount() {
@@ -93,11 +92,16 @@ export default class Item{
     }
 
     get meaningAttempts() {
-        return this.review_statistics.meaning_correct + this.review_statistics.meaning_incorrect;
+        return (
+            this.review_statistics.meaning_correct +
+            this.review_statistics.meaning_incorrect
+        );
     }
 
     get readingCorrectPercent() {
-        return Math.round(this.readingCorrectCount * 100 / this.readingAttempts);
+        return Math.round(
+            (this.readingCorrectCount * 100) / this.readingAttempts
+        );
     }
 
     get readingCorrectCount() {
@@ -105,20 +109,23 @@ export default class Item{
     }
 
     get readingAttempts() {
-        return this.review_statistics.reading_correct + this.review_statistics.reading_incorrect;
+        return (
+            this.review_statistics.reading_correct +
+            this.review_statistics.reading_incorrect
+        );
     }
 
     get domAttrs() {
         let res = {
             "data-en": this.primaryMeaning,
-            "data-mc": this.meaningCorrectPercent,
+            "data-mc": this.meaningCorrectPercent
         };
 
         if (!this.object.startsWith("r"))
             res = {
                 ...res,
                 "data-ja": this.primaryReading,
-                "data-rc": this.readingCorrectPercent,
+                "data-rc": this.readingCorrectPercent
             };
 
         return res;

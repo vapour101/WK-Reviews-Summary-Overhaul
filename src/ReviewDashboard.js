@@ -1,4 +1,4 @@
-import {SRS_LEVELS, ITEM_TYPES} from "./utils";
+import { SRS_LEVELS, ITEM_TYPES } from "./utils";
 import Review from "./Review";
 import Item from "./Item";
 
@@ -9,16 +9,17 @@ export default class ReviewDashboard {
         wkof.include("Apiv2, ItemData");
         let endpointsReady = wkof.ready("Apiv2, ItemData");
 
-        let reviewsFetched = endpointsReady
-            .then(() => this.fetchReviews(wkof));
+        let reviewsFetched = endpointsReady.then(() => this.fetchReviews(wkof));
 
-        let dataLoaded = endpointsReady
-            .then(() => this.fetchItems(wkof, reviewsFetched));
+        let dataLoaded = endpointsReady.then(() =>
+            this.fetchItems(wkof, reviewsFetched)
+        );
 
         let documentReady = wkof.ready("document");
 
-        let documentSetup = Promise.all([documentReady, reviewsFetched])
-            .then(this.setupDocument);
+        let documentSetup = Promise.all([documentReady, reviewsFetched]).then(
+            this.setupDocument
+        );
 
         Promise.all([documentSetup, dataLoaded])
             .then(this.displayData)
@@ -28,7 +29,9 @@ export default class ReviewDashboard {
     setupDocument = () => {
         $("#correct>div>ul, #incorrect>div>ul").empty();
 
-        $("#review-stats>.pure-u-1-4").removeClass().addClass("pure-u-1-5");
+        $("#review-stats>.pure-u-1-4")
+            .removeClass()
+            .addClass("pure-u-1-5");
         this.setTotals();
     };
 
@@ -49,35 +52,42 @@ export default class ReviewDashboard {
     }
 
     setOverallPercentage(correct) {
-        let percentage = Math.round(correct * 100 / this.reviews.length);
-        $("#review-stats-answered-correctly>.review-stats-value").text(percentage);
+        let percentage = Math.round((correct * 100) / this.reviews.length);
+        $("#review-stats-answered-correctly>.review-stats-value").text(
+            percentage
+        );
     }
 
     countSubtotal(srsClass) {
-        let filteredReviews = this.reviews.filter(Review.srsNewFilter(srsClass));
+        let filteredReviews = this.reviews.filter(
+            Review.srsNewFilter(srsClass)
+        );
         let correct = filteredReviews.filter(Review.correctFilter()).length;
 
         this.setSubtotal("correct", srsClass, correct);
-        this.setSubtotal("incorrect", srsClass, filteredReviews.length - correct);
+        this.setSubtotal(
+            "incorrect",
+            srsClass,
+            filteredReviews.length - correct
+        );
     }
 
     setSubtotal(id, srsClass, total) {
         let sel = `#${id} .${srsClass}`;
         $(`${sel}>h3>span>strong`).text(total);
 
-        if (total === 0)
-            $(sel).removeClass("active");
-        else
-            $(sel).addClass("active");
+        if (total === 0) $(sel).removeClass("active");
+        else $(sel).addClass("active");
     }
 
     setMissedBurnsTotal() {
         let missedReviews = this.getMissedBurnReviews();
 
-        if (missedReviews.length === 0)
-            return;
+        if (missedReviews.length === 0) return;
 
-        $("#incorrect>h2").after(`<div class="burned active"><h3><span><strong title="Items in this group">${missedReviews.length}</strong> Missed Burns</span></h3><ul></ul></div>`);
+        $("#incorrect>h2").after(
+            `<div class="burned active"><h3><span><strong title="Items in this group">${missedReviews.length}</strong> Missed Burns</span></h3><ul></ul></div>`
+        );
     }
 
     insertMissedBurnItems() {
@@ -110,7 +120,7 @@ export default class ReviewDashboard {
     createOverallTotalHeader(correct, total) {
         let style = {
             "background-color": "#252A3A",
-            color: "#FFFFFF",
+            color: "#FFFFFF"
         };
 
         let header = $(
@@ -120,7 +130,8 @@ export default class ReviewDashboard {
                      <div class="review-stats-total">out of <span>${total}</span></div>
                      <div class="review-stats-type">Total</div>
                  </div>
-             </div>`);
+             </div>`
+        );
         header.children().css(style);
 
         $("#review-stats").append(header);
@@ -130,19 +141,18 @@ export default class ReviewDashboard {
         let filtered = this.reviews.filter(Review.itemTypeFilter(itemType));
         let correct = filtered.filter(Review.correctFilter()).length;
 
-        if (itemType === "radical")
-            itemType += "s";
+        if (itemType === "radical") itemType += "s";
 
         $(`#review-stats-${itemType}>.review-stats-value`).text(correct);
-        $(`#review-stats-${itemType}>.review-stats-total>span`).text(filtered.length);
+        $(`#review-stats-${itemType}>.review-stats-total>span`).text(
+            filtered.length
+        );
     }
 
     displayData = () => {
-        for (let type of ITEM_TYPES)
-            this.setGrandTotal(type);
+        for (let type of ITEM_TYPES) this.setGrandTotal(type);
 
-        for (let srs of SRS_LEVELS)
-            this.insertItems(srs);
+        for (let srs of SRS_LEVELS) this.insertItems(srs);
 
         this.insertMissedBurnItems();
         this.createHoverElements();
@@ -150,50 +160,58 @@ export default class ReviewDashboard {
 
     createHoverElements() {
         let sel = SRS_LEVELS.map(l => `.${l}>ul>li`).join(", ");
-        $(sel).hover(function() {
-            let div = $("<div />", {class: "hover"}).appendTo(this);
-            let ul = $("<ul />").appendTo(div);
+        $(sel).hover(
+            function() {
+                let div = $("<div />", { class: "hover" }).appendTo(this);
+                let ul = $("<ul />").appendTo(div);
 
-            for (let i of ["en", "ja", "mc", "rc"])
-                $("<li />", {text: $(this).data(i)}).appendTo(ul);
+                for (let i of ["en", "ja", "mc", "rc"])
+                    $("<li />", { text: $(this).data(i) }).appendTo(ul);
 
-            let side_class = "right-side";
-            let right = "0";
+                let side_class = "right-side";
+                let right = "0";
 
-            if ($(window).width() - $(this).offset().left > 200) {
-                side_class = "left-side";
-                right = "auto";
+                if ($(window).width() - $(this).offset().left > 200) {
+                    side_class = "left-side";
+                    right = "auto";
+                }
+
+                let arrow_class = "up-arrow";
+                let top = $(this).height() + 4;
+
+                if ($(window).height() - $(this).offset().top < 100) {
+                    arrow_class = "down-arrow";
+                    top = -1 * (div.height() + top / 2);
+                }
+
+                div.css({
+                    top,
+                    right
+                });
+                div.addClass(arrow_class);
+                div.addClass(side_class);
+            },
+            function() {
+                $(this)
+                    .children("div")
+                    .remove();
             }
-
-            let arrow_class = "up-arrow";
-            let top = $(this).height() + 4;
-
-            if ($(window).height() - $(this).offset().top < 100) {
-                arrow_class = "down-arrow";
-                top = -1 * (div.height() + top / 2);
-            }
-
-            div.css({
-                top, right
-            });
-            div.addClass(arrow_class);
-            div.addClass(side_class);
-        }, function() {
-            $(this).children("div").remove();
-        });
+        );
     }
 
     insertItems(srsClass) {
         let srsReviews = this.reviews.filter(Review.srsNewFilter(srsClass));
 
         $(`#correct .${srsClass}>ul`).append(
-            srsReviews.filter(Review.correctFilter())
+            srsReviews
+                .filter(Review.correctFilter())
                 .map(Review.getItem)
                 .map(Item.mapDomElement)
         );
 
         $(`#incorrect .${srsClass}>ul`).append(
-            srsReviews.filter(Review.incorrectFilter())
+            srsReviews
+                .filter(Review.incorrectFilter())
                 .map(Review.getItem)
                 .map(Item.mapDomElement)
         );
@@ -207,28 +225,28 @@ export default class ReviewDashboard {
 
     fetchReviews(wkof) {
         let options = {
-            last_update: this.getMidnightToday(),
+            last_update: this.getMidnightToday()
         };
 
         return wkof.Apiv2.fetch_endpoint("reviews", options)
             .then(Review.processApiResponse)
-            .then(reviews => this.reviews = reviews);
+            .then(reviews => (this.reviews = reviews));
     }
 
-    fetchItems(wkof, reviewsPromise){
+    fetchItems(wkof, reviewsPromise) {
         let config = {
             wk_items: {
                 options: {
-                    review_statistics: true,
+                    review_statistics: true
                 },
                 filters: {
                     //level: "1..+0",
                     srs: {
                         value: "lock",
-                        invert: true,
-                    },
-                },
-            },
+                        invert: true
+                    }
+                }
+            }
         };
 
         let itemsFetch = wkof.ItemData.get_items(config);
@@ -241,8 +259,7 @@ export default class ReviewDashboard {
             .then(() => this.reviews.sort(Review.compare));
     }
 
-    associateItemsWithReviews = (itemList) => {
-        for (let review of this.reviews)
-            review.associateItem(itemList);
+    associateItemsWithReviews = itemList => {
+        for (let review of this.reviews) review.associateItem(itemList);
     };
 }

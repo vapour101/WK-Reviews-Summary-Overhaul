@@ -1,4 +1,4 @@
-import {fetchWkof, promptWkofInstall} from "./utils";
+import { fetchWkof, promptWkofInstall } from "./utils";
 import ReviewDashboard from "./ReviewDashboard";
 
 fetchWkof()
