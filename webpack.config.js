@@ -1,6 +1,5 @@
 const path = require("path");
 const WebpackUserscript = require("webpack-userscript");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const displayName = require("./package.json").displayName;
 const dev = process.env.NODE_ENV === "development";
@@ -13,7 +12,18 @@ module.exports = {
         path: path.resolve(__dirname, "dist")
     },
     optimization: {
-        minimize: false
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    output: {
+                        comments: false
+                    },
+                    compress: false,
+                    mangle: false
+                }
+            })
+        ]
     },
     plugins: [
         new WebpackUserscript({
@@ -23,16 +33,6 @@ module.exports = {
                 grant: "none"
             },
             pretty: true
-        }),
-        new UglifyJsPlugin({
-            uglifyOptions: {
-                compress: false,
-                mangle: false,
-                output: {
-                    comments: false,
-                    beautify: true
-                }
-            }
         })
     ],
     module: {
