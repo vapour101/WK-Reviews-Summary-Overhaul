@@ -1,4 +1,4 @@
-import { name as package_name } from "../package.json";
+import { displayName } from "../package.json";
 export const SRS_LEVELS = [
     "apprentice",
     "guru",
@@ -7,7 +7,6 @@ export const SRS_LEVELS = [
     "burned"
 ];
 export const ITEM_TYPES = ["radical", "kanji", "vocabulary"];
-export const script_name = package_name;
 
 export const fetchWkof = () =>
     new Promise((resolve, reject) => {
@@ -21,7 +20,7 @@ export const fetchWkof = () =>
 export function promptWkofInstall() {
     if (
         confirm(
-            script_name +
+            displayName +
                 " requires Wanikani Open Framework.\nDo you want to be forwarded to the installation instructions?"
         )
     )
