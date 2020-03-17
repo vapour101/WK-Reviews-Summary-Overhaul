@@ -1,5 +1,6 @@
 const path = require("path");
 const WebpackUserscript = require("webpack-userscript");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const displayName = require("./package.json").displayName;
 const dev = process.env.NODE_ENV === "development";
@@ -22,6 +23,16 @@ module.exports = {
                 grant: "none"
             },
             pretty: true
+        }),
+        new UglifyJsPlugin({
+            uglifyOptions: {
+                compress: false,
+                mangle: false,
+                output: {
+                    comments: false,
+                    beautify: true
+                }
+            }
         })
     ],
     module: {
@@ -30,11 +41,7 @@ module.exports = {
                 test: /\.m?js$/,
                 exclude: /(node_modules|bower_components)/,
                 use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: ["@babel/preset-env"],
-                        plugins: ["@babel/plugin-proposal-class-properties"]
-                    }
+                    loader: "babel-loader"
                 }
             }
         ]
