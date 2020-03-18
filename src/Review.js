@@ -17,6 +17,10 @@ export default class Review {
         return review.item;
     }
 
+    static creationDate(review) {
+        return review.createdAt;
+    }
+
     static srsPrevFilter(srsClass) {
         return review => review.srsPrevName.includes(srsClass);
     }
@@ -55,6 +59,10 @@ export default class Review {
         if (srsDiff !== 0) return srsDiff;
 
         return this.itemId - other.itemId;
+    }
+
+    get createdAt() {
+        return new Date(this.data.created_at);
     }
 
     get itemId() {

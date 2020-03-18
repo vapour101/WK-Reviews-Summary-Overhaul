@@ -1,6 +1,7 @@
 import { SRS_LEVELS, ITEM_TYPES } from "./utils";
 import Review from "./Review";
 import Item from "./Item";
+import ReviewTimeline from "./ReviewTimeline";
 
 export default class ReviewDashboard {
     reviews = [];
@@ -17,16 +18,20 @@ export default class ReviewDashboard {
 
         let documentReady = wkof.ready("document");
 
-        let documentSetup = Promise.all([documentReady, reviewsFetched]).then(
-            this.setupDocument
-        );
+        let documentSetup = Promise.all([
+            documentReady,
+            reviewsFetched
+        ]).then(() => this.setupDocument(wkof));
 
         Promise.all([documentSetup, dataLoaded])
             .then(this.displayData)
             .catch(err => console.log(err));
     }
 
-    setupDocument = () => {
+    setupDocument = wkof => {
+        let timeline = new ReviewTimeline(wkof);
+        $("#reviews-summary>:first-child").after(timeline.domElement);
+
         $("#correct>div>ul, #incorrect>div>ul").empty();
 
         $("#review-stats>.pure-u-1-4")

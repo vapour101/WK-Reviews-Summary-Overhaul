@@ -30,7 +30,8 @@ module.exports = {
             headers: {
                 name: displayName,
                 include: "/^https://(www|preview).wanikani.com/review/?$/",
-                grant: "none"
+                grant: "none",
+                require: "https://d3js.org/d3.v4.js"
             },
             pretty: true
         })
@@ -43,6 +44,10 @@ module.exports = {
                 use: {
                     loader: "babel-loader"
                 }
+            },
+            {
+                test: /\.html$/i,
+                loader: "html-loader"
             }
         ]
     }
