@@ -29,8 +29,7 @@ module.exports = {
         new WebpackUserscript({
             headers: {
                 name: displayName,
-                include:
-                    "/^https?://(www|preview)\\.wanikani\\.com/review/?(\\?.*)?$/",
+                include: /^https?:\/\/(www|preview)\.wanikani\.com\/review\/?(\?|$)/.toString(),
                 grant: "none",
                 require: "https://d3js.org/d3.v4.js"
             },
