@@ -2,6 +2,7 @@ const path = require("path");
 const WebpackUserscript = require("webpack-userscript");
 const TerserPlugin = require("terser-webpack-plugin");
 const displayName = require("./package.json").displayName;
+const packageName = require("./package.json").name;
 const dev = process.env.NODE_ENV === "development";
 
 module.exports = {
@@ -17,10 +18,32 @@ module.exports = {
             new TerserPlugin({
                 terserOptions: {
                     output: {
-                        comments: false
+                        beautify: true,
+                        braces: true,
+                        comments: false,
+                        ecma: 2017,
+                        quote_style: 2
                     },
-                    compress: false,
-                    mangle: false
+                    compress: {
+                        arrows: false,
+                        booleans: false,
+                        comparisons: false,
+                        ecma: 2017,
+                        if_return: false,
+                        join_vars: false,
+                        keep_classnames: true,
+                        keep_fargs: false,
+                        keep_fnames: true,
+                        keep_infinity: true,
+                        negate_iife: false,
+                        passes: 2,
+                        pure_getters: true,
+                        reduce_vars: false,
+                        sequences: false,
+                        typeofs: false
+                    },
+                    mangle: false,
+                    ecma: 2017
                 }
             })
         ]
@@ -39,7 +62,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.m?js$/,
+                test: /\.js$/i,
                 exclude: /(node_modules|bower_components)/,
                 use: {
                     loader: "babel-loader"
@@ -48,6 +71,23 @@ module.exports = {
             {
                 test: /\.html$/i,
                 loader: "html-loader"
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    {
+                        loader: "style-loader",
+                        options: {
+                            esModule: true,
+                            injectType: "singletonStyleTag",
+                            attributes: {
+                                id: `${packageName}-style`
+                            }
+                        }
+                    },
+                    "css-loader",
+                    "sass-loader"
+                ]
             }
         ]
     }

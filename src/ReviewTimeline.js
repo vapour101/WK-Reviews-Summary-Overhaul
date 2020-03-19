@@ -2,11 +2,18 @@ import Review from "./Review";
 import Item from "./Item";
 import timelineStructure from "./ReviewTimelineStructure.html";
 import { ITEM_TYPES } from "./utils";
+import "./ReviewTimelineStyle.scss";
 
 export default class ReviewTimeline {
+    barPadding = 10;
     domElement = null;
     reviews = [];
     interval = d3.timeHour.every(4);
+    svgHeight = 235;
+    graphTopAxisHeight = 20;
+    graphLeftAxisWidth = 20;
+    graphTopPadding = 5;
+    graphY = 10;
 
     lastUpdate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -28,11 +35,25 @@ export default class ReviewTimeline {
         last_update: this.lastUpdate
     };
 
-    get graphWidth() {
+    get svgWidth() {
         return $(this.domElement).width();
     }
 
-    graphHeight = 100;
+    get graphWidth() {
+        return this.svgWidth - this.graphLeftAxisWidth;
+    }
+
+    get graphHeight() {
+        return this.svgHeight - this.graphTopAxisHeight;
+    }
+
+    get graphX() {
+        return this.graphLeftAxisWidth;
+    }
+
+    get maxBarHeight() {
+        return this.graphHeight - this.graphTopPadding;
+    }
 
     get timeDomain() {
         return [
@@ -68,18 +89,43 @@ export default class ReviewTimeline {
     }
 
     initializeTimeline = () => {
-        d3.select(this.domElement)
+        let graph = d3
+            .select(this.domElement)
             .select("svg")
-            .attr("transform", "scale(1, -1)");
+            .attr("transform", "scale(1, -1)")
+            .append("g")
+            .classed("graphMain", true);
+
+        graph.append("rect").classed("graphBackground", true);
+
+        graph
+            .append("g")
+            .attr("transform", "scale(1, -1)")
+            .classed("x-axis", true);
+
+        graph.append("g").classed("y-axis", true);
 
         this.drawTimeline();
     };
 
     drawTimeline() {
+        let graph = d3
+            .select(this.domElement)
+            .select("svg")
+            .attr("width", this.svgWidth)
+            .attr("height", this.svgHeight)
+            .select(".graphMain")
+            .attr("transform", `translate(${this.graphX}, ${this.graphY})`);
+
+        graph
+            .select(".graphBackground")
+            .attr("width", this.graphWidth)
+            .attr("height", this.graphHeight);
+
         let timeScale = d3
             .scaleTime()
             .domain(this.timeDomain)
-            .range([0, this.graphWidth]);
+            .range([0, this.graphWidth + this.barPadding]);
 
         let histogram = d3
             .histogram()
@@ -92,15 +138,35 @@ export default class ReviewTimeline {
         let yScale = d3
             .scaleLinear()
             .domain([0, d3.max(bins, b => b.length)])
-            .range([0, this.graphHeight]);
+            .range([0, this.maxBarHeight]);
 
-        let barGroup = d3
-            .select(this.domElement)
-            .select("svg")
-            .attr("width", this.graphWidth)
-            .attr("height", this.graphHeight)
-            .selectAll(".bar")
-            .data(bins);
+        let xAxis = d3
+            .axisTop(timeScale)
+            .tickSize(this.graphHeight)
+            .tickSizeOuter(0)
+            .ticks(this.interval.filter(d => d > d3.timeDay(d)));
+
+        let yAxis = d3
+            .axisLeft(yScale.copy().range([this.maxBarHeight, 0]))
+            .tickSize(this.graphWidth);
+
+        let killDomain = g => g.select(".domain").remove();
+
+        graph
+            .select(".x-axis")
+            .call(xAxis)
+            .call(killDomain);
+
+        graph
+            .select(".y-axis")
+            .attr(
+                "transform",
+                `translate(${this.graphWidth}, ${this.maxBarHeight}) scale(1, -1)`
+            )
+            .call(yAxis)
+            .call(killDomain);
+
+        let barGroup = graph.selectAll(".bar").data(bins);
 
         barGroup.exit().remove();
 
@@ -120,7 +186,7 @@ export default class ReviewTimeline {
                 }),
                 {
                     x: timeScale(d.x0),
-                    width: timeScale(d.x1) - timeScale(d.x0)
+                    width: timeScale(d.x1) - timeScale(d.x0) - this.barPadding
                 }
             )
         );
